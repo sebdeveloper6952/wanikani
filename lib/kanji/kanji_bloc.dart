@@ -49,4 +49,27 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       ),
     );
   }
+
+  Future<void> _onSubmit(
+    AnswerSubjectMeaning event,
+    Emitter<KanjiState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: KanjiStatus.loading,
+      ),
+    );
+
+    if (!_subjects.containsValue(event.subjectId)) {
+      emit(
+        state.copyWith(
+          status: KanjiStatus.error,
+        ),
+      );
+      return;
+    }
+
+    final subject = _subjects[event.subjectId];
+    subject.id;
+  }
 }

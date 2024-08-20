@@ -7,7 +7,8 @@ enum KanjiStatus {
   waitingForMeaning,
   waitingForWriting,
   showingDetails,
-  done
+  done,
+  error,
 }
 
 class KanjiState extends Equatable {

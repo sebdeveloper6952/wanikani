@@ -7,9 +7,11 @@ sealed class KanjiEvent {
 final class GetRandomSubjectEvent extends KanjiEvent {}
 
 final class AnswerSubjectMeaning extends KanjiEvent {
+  final int subjectId;
   final String meaning;
 
   AnswerSubjectMeaning({
+    required this.subjectId,
     required this.meaning,
   });
 }
@@ -31,9 +33,11 @@ final class AnswerSubjectWritingResultEvent extends KanjiEvent {
 }
 
 final class AnswerSubjectWritingEvent extends KanjiEvent {
+  final int subjectId;
   final String writing;
 
   AnswerSubjectWritingEvent({
+    required this.subjectId,
     required this.writing,
   });
 }
