@@ -27,4 +27,31 @@ class Utils {
 
     return color;
   }
+
+  static Color getTextFieldColorForSubjectType(String subjectType) {
+    var color = const Color.fromRGBO(
+      119,
+      0,
+      179,
+      1.0,
+    );
+
+    if (subjectType == "radical") {
+      color = const Color.fromRGBO(
+        18,
+        107,
+        160,
+        1.0,
+      );
+    } else if (subjectType == "kanji") {
+      color = const Color.fromRGBO(
+        178,
+        1,
+        120,
+        1.0,
+      );
+    }
+
+    return color;
+  }
 }

@@ -53,11 +53,14 @@ class MyApp extends StatelessWidget {
   ThemeData _buildTheme(Brightness brightness) {
     ThemeData baseTheme = ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.blueGrey,
-        brightness: brightness,
-      ),
       brightness: brightness,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
     );
 
     return baseTheme.copyWith(
