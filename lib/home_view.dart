@@ -5,6 +5,7 @@ import 'package:wanikani/kanji/kanji_bloc.dart';
 import 'package:jovial_svg/jovial_svg.dart';
 import 'package:wanikani/utils.dart';
 import 'package:flutter_flip_card/flutter_flip_card.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -67,9 +68,12 @@ class _HomeViewState extends State<HomeView> {
                                 onPressed: () {
                                   _flipCardController.flipcard();
                                 },
-                                icon: Icon(
-                                  Icons.lock_open,
-                                  color: Colors.white,
+                                icon: SvgPicture.asset(
+                                  "assets/icons/eye.svg",
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               ),
                               IconButton(
@@ -78,47 +82,56 @@ class _HomeViewState extends State<HomeView> {
                                       .read<KanjiBloc>()
                                       .add(GetRandomSubjectEvent());
                                 },
-                                icon: Icon(
-                                  Icons.refresh,
-                                  color: Colors.white,
+                                icon: SvgPicture.asset(
+                                  "assets/icons/right.svg",
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               )
                             ],
                           ),
                         ),
                         Expanded(
-                            child: state.subject!.object == "radical"
-                                ? state.subject!.data.characters != null
-                                    ? Center(
+                          child: state.subject!.object == "radical"
+                              ? state.subject!.data.characters != null
+                                  ? Center(
+                                      child: FittedBox(
+                                        fit: BoxFit.contain,
                                         child: Text(
                                           state.subject!.data.characters![0],
                                           style: const TextStyle(
                                             fontSize: 96,
                                           ),
                                         ),
-                                      )
-                                    : SizedBox(
-                                        height: 64,
-                                        width: 64,
-                                        child: ScalableImageWidget.fromSISource(
-                                          si: ScalableImageSource
-                                              .fromSvgHttpUrl(
-                                            Uri.parse(
-                                              state.subject!.data
-                                                  .characterImages![0].url,
-                                            ),
-                                            currentColor: Colors.white,
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      height: 64,
+                                      width: 64,
+                                      child: ScalableImageWidget.fromSISource(
+                                        si: ScalableImageSource.fromSvgHttpUrl(
+                                          Uri.parse(
+                                            state.subject!.data
+                                                .characterImages![0].url,
                                           ),
+                                          currentColor: Colors.white,
                                         ),
-                                      )
-                                : Center(
+                                      ),
+                                    )
+                              : Center(
+                                  child: FittedBox(
+                                    fit: BoxFit.contain,
                                     child: Text(
                                       state.subject!.data.characters!,
                                       style: const TextStyle(
                                         fontSize: 96,
                                       ),
                                     ),
-                                  )),
+                                  ),
+                                ),
+                        ),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -148,8 +161,10 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
-                            child: Text("submit"),
+                            onPressed: () {
+                              // TODO: submit meaning answer
+                            },
+                            child: const Text("submit"),
                           ),
                         ),
                       ],
@@ -161,17 +176,45 @@ class _HomeViewState extends State<HomeView> {
                     ),
                     child: Column(
                       children: [
-                        IconButton(
-                          onPressed: () {
-                            _flipCardController.flipcard();
-                          },
-                          icon: Icon(
-                            Icons.lock,
-                            color: Colors.white,
+                        SizedBox(
+                          height: 50,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  _flipCardController.flipcard();
+                                },
+                                icon: SvgPicture.asset(
+                                  "assets/icons/eye_off.svg",
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  context
+                                      .read<KanjiBloc>()
+                                      .add(GetRandomSubjectEvent());
+                                },
+                                icon: SvgPicture.asset(
+                                  "assets/icons/right.svg",
+                                  colorFilter: ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ),
                         Text(
-                          state.subject!.data.meanings[0].meaning,
+                          "Meaning: ${state.subject!.data.meanings[0].meaning}",
+                          style: TextStyle(
+                            fontSize: 24,
+                          ),
                         ),
                       ],
                     ),
