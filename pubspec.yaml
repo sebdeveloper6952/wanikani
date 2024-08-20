@@ -31,7 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6
-  dart_nostr: ^8.2.0
   equatable: ^2.0.5
   logging: ^1.2.0
   google_fonts: ^6.2.1
@@ -44,6 +43,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   multiple_result: ^5.1.0
+  jovial_svg: ^1.1.22
 
 dev_dependencies:
   flutter_test:

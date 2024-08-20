@@ -16,12 +16,26 @@ Future<void> main() async {
 
   final api = WanikaniApi();
   final fetchUserResult = await api.fetchUserInfo();
-  fetchUserResult.when(
-    (success) => {},
-    (error) => {log.severe("can't get user: $error")},
-  );
+  if (fetchUserResult.isError()) {
+    log.severe(fetchUserResult.tryGetError());
+  }
 
-  final kanjiBloc = KanjiBloc();
+  final user = fetchUserResult.tryGetSuccess();
+  if (user == null) {
+    log.severe(fetchUserResult.tryGetError());
+    return;
+  }
+
+  final subjectsResult = await api.fetchSubjectsForLevel(user.level);
+  final subjects = subjectsResult.tryGetSuccess();
+  if (subjects == null) {
+    log.severe(subjectsResult.tryGetError());
+    return;
+  }
+
+  final kanjiBloc = KanjiBloc(
+    subjects: subjects,
+  );
 
   runApp(MyApp(
     kanjiBloc: kanjiBloc,
@@ -56,7 +70,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<KanjiBloc>(
-          create: (_) => KanjiBloc(),
+          create: (_) => _kanjiBloc,
         ),
       ],
       child: MaterialApp(

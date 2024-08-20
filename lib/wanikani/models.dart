@@ -55,8 +55,21 @@ class Meaning {
 }
 
 @JsonSerializable()
-class Subject {
-  final String characters;
+class CharacterImage {
+  final String url;
+
+  CharacterImage({
+    required this.url,
+  });
+
+  factory CharacterImage.fromJson(Map<String, dynamic> json) =>
+      _$CharacterImageFromJson(json);
+  Map<String, dynamic> toJson() => _$CharacterImageToJson(this);
+}
+
+@JsonSerializable()
+class SubjectData {
+  final String? characters;
   final String documentUrl;
   final int lessonPosition;
   final int level;
@@ -67,8 +80,9 @@ class Subject {
   final DateTime? hiddenAt;
   final List<AuxiliaryMeaning> auxiliaryMeanings;
   final List<Meaning> meanings;
+  final List<CharacterImage>? characterImages;
 
-  Subject({
+  SubjectData({
     required this.characters,
     required this.documentUrl,
     required this.lessonPosition,
@@ -80,6 +94,28 @@ class Subject {
     required this.hiddenAt,
     required this.auxiliaryMeanings,
     required this.meanings,
+    required this.characterImages,
+  });
+
+  factory SubjectData.fromJson(Map<String, dynamic> json) =>
+      _$SubjectDataFromJson(json);
+  Map<String, dynamic> toJson() => _$SubjectDataToJson(this);
+}
+
+@JsonSerializable()
+class Subject {
+  final int id;
+  final String object;
+  final String url;
+  final DateTime dataUpdatedAt;
+  final SubjectData data;
+
+  Subject({
+    required this.id,
+    required this.object,
+    required this.url,
+    required this.dataUpdatedAt,
+    required this.data,
   });
 
   factory Subject.fromJson(Map<String, dynamic> json) =>

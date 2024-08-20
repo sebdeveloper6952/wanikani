@@ -23,4 +23,35 @@ class WanikaniApi {
       return Result.error(e.toString());
     }
   }
+
+  Future<Result<List<Subject>, String>> fetchSubjectsForLevel(int level) async {
+    final levels = List.generate(
+      level,
+      (index) => index + 1,
+      growable: false,
+    ).join(",");
+
+    final url = Uri.https(
+      _apiUrl,
+      "/v2/subjects",
+      {"levels": levels},
+    );
+
+    try {
+      final response =
+          await http.get(url, headers: {"Authorization": "Bearer $_authToken"});
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+        final subjects = (jsonBody["data"] as List)
+            .map((item) => Subject.fromJson(item))
+            .toList();
+
+        return Result.success(subjects);
+      } else {
+        return Result.error("http ${response.statusCode}");
+      }
+    } catch (e) {
+      return Result.error(e.toString());
+    }
+  }
 }

@@ -75,12 +75,29 @@ Map<String, dynamic> _$MeaningToJson(Meaning instance) => <String, dynamic>{
       'accepted_answer': instance.acceptedAnswer,
     };
 
-Subject _$SubjectFromJson(Map<String, dynamic> json) => $checkedCreate(
-      'Subject',
+CharacterImage _$CharacterImageFromJson(Map<String, dynamic> json) =>
+    $checkedCreate(
+      'CharacterImage',
       json,
       ($checkedConvert) {
-        final val = Subject(
-          characters: $checkedConvert('characters', (v) => v as String),
+        final val = CharacterImage(
+          url: $checkedConvert('url', (v) => v as String),
+        );
+        return val;
+      },
+    );
+
+Map<String, dynamic> _$CharacterImageToJson(CharacterImage instance) =>
+    <String, dynamic>{
+      'url': instance.url,
+    };
+
+SubjectData _$SubjectDataFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'SubjectData',
+      json,
+      ($checkedConvert) {
+        final val = SubjectData(
+          characters: $checkedConvert('characters', (v) => v as String?),
           documentUrl: $checkedConvert('document_url', (v) => v as String),
           lessonPosition:
               $checkedConvert('lesson_position', (v) => (v as num).toInt()),
@@ -105,6 +122,12 @@ Subject _$SubjectFromJson(Map<String, dynamic> json) => $checkedCreate(
               (v) => (v as List<dynamic>)
                   .map((e) => Meaning.fromJson(e as Map<String, dynamic>))
                   .toList()),
+          characterImages: $checkedConvert(
+              'character_images',
+              (v) => (v as List<dynamic>?)
+                  ?.map(
+                      (e) => CharacterImage.fromJson(e as Map<String, dynamic>))
+                  .toList()),
         );
         return val;
       },
@@ -115,11 +138,13 @@ Subject _$SubjectFromJson(Map<String, dynamic> json) => $checkedCreate(
         'spacedRepetitionSystemId': 'spaced_repetition_system_id',
         'createdAt': 'created_at',
         'hiddenAt': 'hidden_at',
-        'auxiliaryMeanings': 'auxiliary_meanings'
+        'auxiliaryMeanings': 'auxiliary_meanings',
+        'characterImages': 'character_images'
       },
     );
 
-Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{
+Map<String, dynamic> _$SubjectDataToJson(SubjectData instance) =>
+    <String, dynamic>{
       'characters': instance.characters,
       'document_url': instance.documentUrl,
       'lesson_position': instance.lessonPosition,
@@ -132,4 +157,32 @@ Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{
       'auxiliary_meanings':
           instance.auxiliaryMeanings.map((e) => e.toJson()).toList(),
       'meanings': instance.meanings.map((e) => e.toJson()).toList(),
+      'character_images':
+          instance.characterImages?.map((e) => e.toJson()).toList(),
+    };
+
+Subject _$SubjectFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'Subject',
+      json,
+      ($checkedConvert) {
+        final val = Subject(
+          id: $checkedConvert('id', (v) => (v as num).toInt()),
+          object: $checkedConvert('object', (v) => v as String),
+          url: $checkedConvert('url', (v) => v as String),
+          dataUpdatedAt: $checkedConvert(
+              'data_updated_at', (v) => DateTime.parse(v as String)),
+          data: $checkedConvert(
+              'data', (v) => SubjectData.fromJson(v as Map<String, dynamic>)),
+        );
+        return val;
+      },
+      fieldKeyMap: const {'dataUpdatedAt': 'data_updated_at'},
+    );
+
+Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{
+      'id': instance.id,
+      'object': instance.object,
+      'url': instance.url,
+      'data_updated_at': instance.dataUpdatedAt.toIso8601String(),
+      'data': instance.data.toJson(),
     };
