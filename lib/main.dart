@@ -5,8 +5,16 @@ import 'package:logging/logging.dart';
 import 'package:wanikani/home_view.dart';
 import 'package:wanikani/kanji/kanji_bloc.dart';
 import 'package:wanikani/wanikani/api.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
+  // we don't need the status bar
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [],
+  );
+
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
