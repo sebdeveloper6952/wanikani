@@ -162,7 +162,12 @@ class _HomeViewState extends State<HomeView> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              // TODO: submit meaning answer
+                              context.read<KanjiBloc>().add(
+                                    AnswerSubjectMeaningEvent(
+                                      subjectId: state.subject!.id,
+                                      meaning: _meaningGuess,
+                                    ),
+                                  );
                             },
                             child: const Text("submit"),
                           ),
@@ -187,7 +192,7 @@ class _HomeViewState extends State<HomeView> {
                                 },
                                 icon: SvgPicture.asset(
                                   "assets/icons/eye_off.svg",
-                                  colorFilter: ColorFilter.mode(
+                                  colorFilter: const ColorFilter.mode(
                                     Colors.white,
                                     BlendMode.srcIn,
                                   ),
@@ -222,9 +227,69 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
             );
-          } else {
-            return Center(child: Text(state.status.toString()));
+          } else if (state.status == KanjiStatus.answerMeaningCorrect) {
+            return SizedBox.expand(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/icons/check.svg",
+                        colorFilter: ColorFilter.mode(
+                          Colors.green[200]!,
+                          BlendMode.srcIn,
+                        ),
+                        height: 96,
+                      ),
+                      Text(
+                        "nice",
+                        style: TextStyle(
+                          fontSize: 32,
+                          color: Colors.green[200],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          } else if (state.status == KanjiStatus.incorrectAnswer) {
+            return SizedBox.expand(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        "assets/icons/close.svg",
+                        colorFilter: ColorFilter.mode(
+                          Colors.red[200]!,
+                          BlendMode.srcIn,
+                        ),
+                        height: 96,
+                      ),
+                      Text(
+                        "bad",
+                        style: TextStyle(
+                          fontSize: 32,
+                          color: Colors.red[200],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
           }
+
+          return Center(child: Text(state.status.toString()));
         },
       ),
     );

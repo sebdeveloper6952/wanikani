@@ -76,6 +76,8 @@ flutter:
     - assets/icons/eye.svg
     - assets/icons/eye_off.svg
     - assets/icons/right.svg
+    - assets/icons/check.svg
+    - assets/icons/close.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

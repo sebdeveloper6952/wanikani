@@ -24,6 +24,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
     }
 
     on<GetRandomSubjectEvent>(_onGetRandomSubject);
+    on<AnswerSubjectMeaningEvent>(_onAnswerSubjectMeaning);
   }
 
   Future<void> _onGetRandomSubject(
@@ -50,8 +51,8 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
     );
   }
 
-  Future<void> _onSubmit(
-    AnswerSubjectMeaning event,
+  Future<void> _onAnswerSubjectMeaning(
+    AnswerSubjectMeaningEvent event,
     Emitter<KanjiState> emit,
   ) async {
     emit(
@@ -60,7 +61,8 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       ),
     );
 
-    if (!_subjects.containsValue(event.subjectId)) {
+    final subject = _subjects[event.subjectId];
+    if (subject == null) {
       emit(
         state.copyWith(
           status: KanjiStatus.error,
@@ -69,7 +71,37 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       return;
     }
 
-    final subject = _subjects[event.subjectId];
-    subject.id;
+    // compare given answer with all meanings, return if one of them is correct
+    for (var meaning in subject.data.meanings) {
+      if (meaning.meaning.toLowerCase() == event.meaning.toLowerCase()) {
+        emit(
+          state.copyWith(
+            status: KanjiStatus.answerMeaningCorrect,
+          ),
+        );
+
+        await Future.delayed(
+          const Duration(seconds: 1),
+          () => add(GetRandomSubjectEvent()),
+        );
+
+        return;
+      }
+    }
+
+    emit(
+      state.copyWith(
+        status: KanjiStatus.incorrectAnswer,
+      ),
+    );
+
+    await Future.delayed(
+      const Duration(seconds: 1),
+      () => emit(
+        state.copyWith(
+          status: KanjiStatus.waitingForMeaning,
+        ),
+      ),
+    );
   }
 }
