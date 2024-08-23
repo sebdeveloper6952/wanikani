@@ -24,7 +24,7 @@ class KanjiState extends Equatable {
   });
 
   static KanjiState initial() => const KanjiState(
-        status: KanjiStatus.initial,
+        status: KanjiStatus.loading,
         subject: null,
       );
 

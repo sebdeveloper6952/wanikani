@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
+import 'package:wanikani/db/db.dart';
 import 'package:wanikani/home_view.dart';
 import 'package:wanikani/kanji/kanji_bloc.dart';
-import 'package:wanikani/wanikani/api.dart';
+import 'package:wanikani/kanji/kanji_sqlite_repo.dart';
 import 'package:flutter/services.dart';
+import 'package:sqflite/sqflite.dart';
 
 Future<void> main() async {
   // we don't need the status bar
@@ -19,45 +21,43 @@ Future<void> main() async {
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
-
   final log = Logger("main");
 
-  final api = WanikaniApi();
-  final fetchUserResult = await api.fetchUserInfo();
-  if (fetchUserResult.isError()) {
-    log.severe(fetchUserResult.tryGetError());
-  }
-
-  final user = fetchUserResult.tryGetSuccess();
-  if (user == null) {
-    log.severe(fetchUserResult.tryGetError());
-    return;
-  }
-
-  final subjectsResult = await api.fetchSubjectsForLevel(user.level);
-  final subjects = subjectsResult.tryGetSuccess();
-  if (subjects == null) {
-    log.severe(subjectsResult.tryGetError());
-    return;
-  }
-
-  final kanjiBloc = KanjiBloc(
-    subjects: subjects,
+  final dbPath = "${await getDatabasesPath()}/wanikani.db";
+  await deleteDatabase(dbPath);
+  final db = await openDb(dbPath);
+  final repo = KanjiSqliteRepo(
+    db: db,
   );
 
-  runApp(MyApp(
-    kanjiBloc: kanjiBloc,
-  ));
+  final kanjiBloc = KanjiBloc(
+    repo: repo,
+  );
+
+  runApp(
+    MyApp(
+      kanjiBloc: kanjiBloc,
+      repo: repo,
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({
     super.key,
     required KanjiBloc kanjiBloc,
-  }) : _kanjiBloc = kanjiBloc;
+    required KanjiSqliteRepo repo,
+  })  : _kanjiBloc = kanjiBloc,
+        _repo = repo;
 
   final KanjiBloc _kanjiBloc;
+  final KanjiSqliteRepo _repo;
 
+  @override
+  createState() => _MyApp();
+}
+
+class _MyApp extends State<MyApp> {
   ThemeData _buildTheme(Brightness brightness) {
     ThemeData baseTheme = ThemeData(
       useMaterial3: true,
@@ -76,12 +76,22 @@ class MyApp extends StatelessWidget {
     );
   }
 
+  Future<void> _init() async {
+    await widget._repo.init();
+  }
+
+  @override
+  void initState() {
+    _init();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<KanjiBloc>(
-          create: (_) => _kanjiBloc,
+          create: (_) => widget._kanjiBloc,
         ),
       ],
       child: MaterialApp(

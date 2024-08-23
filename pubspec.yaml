@@ -47,6 +47,7 @@ dependencies:
   flutter_flip_card: ^0.0.6
   flutter_svg: ^2.0.10+1
   haptic_feedback: ^0.5.1+1
+  sqflite: ^2.3.3+1
 
 dev_dependencies:
   flutter_test:

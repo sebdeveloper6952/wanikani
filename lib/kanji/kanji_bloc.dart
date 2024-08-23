@@ -1,9 +1,7 @@
-import 'dart:math';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
-import 'package:wanikani/wanikani/api.dart';
+import 'package:wanikani/kanji/kanji_sqlite_repo.dart';
 import 'package:wanikani/wanikani/models.dart';
 
 part 'kanji_event.dart';
@@ -11,20 +9,20 @@ part 'kanji_state.dart';
 
 class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
   final log = Logger('KanjiBloc');
-  final WanikaniApi _api;
-  final Map<int, Subject> _subjects = {};
+  final KanjiSqliteRepo repo;
 
   KanjiBloc({
-    WanikaniApi? api,
-    required List<Subject> subjects,
-  })  : _api = api ?? WanikaniApi(),
-        super(KanjiState.initial()) {
-    for (var subject in subjects) {
-      _subjects[subject.id] = subject;
-    }
-
+    required this.repo,
+  }) : super(KanjiState.initial()) {
     on<GetRandomSubjectEvent>(_onGetRandomSubject);
     on<AnswerSubjectMeaningEvent>(_onAnswerSubjectMeaning);
+
+    _init();
+  }
+
+  Future<void> _init() async {
+    await repo.init();
+    add(GetRandomSubjectEvent());
   }
 
   Future<void> _onGetRandomSubject(
@@ -35,18 +33,12 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       status: KanjiStatus.loading,
     ));
 
-    final randomIndex = _subjects.keys.elementAt(
-      Random().nextInt(
-        _subjects.length,
-      ),
-    );
-
-    final randomSubject = _subjects[randomIndex];
+    final subject = await repo.getRandomSubject();
 
     emit(
       state.copyWith(
         status: KanjiStatus.waitingForMeaning,
-        subject: randomSubject,
+        subject: subject,
       ),
     );
   }
@@ -61,7 +53,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       ),
     );
 
-    final subject = _subjects[event.subjectId];
+    final subject = await repo.getSubjectById(event.subjectId);
     if (subject == null) {
       emit(
         state.copyWith(
@@ -71,7 +63,6 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       return;
     }
 
-    // compare given answer with all meanings, return if one of them is correct
     for (var meaning in subject.data.meanings) {
       if (meaning.meaning.toLowerCase() == event.meaning.toLowerCase()) {
         emit(

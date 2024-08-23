@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'models.g.dart';
@@ -121,4 +123,28 @@ class Subject {
   factory Subject.fromJson(Map<String, dynamic> json) =>
       _$SubjectFromJson(json);
   Map<String, dynamic> toJson() => _$SubjectToJson(this);
+
+  Map<String, Object?> toDbMap() {
+    return {
+      'id': id,
+      'object': object,
+      'url': url,
+      'data': utf8.encode(
+        jsonEncode(data),
+      ),
+    };
+  }
+
+  Subject.fromDbMap(Map<String, Object?> map)
+      : id = map["id"] as int,
+        object = map["object"] as String,
+        url = map["url"] as String,
+        dataUpdatedAt = DateTime.now(),
+        data = SubjectData.fromJson(
+          jsonDecode(
+            utf8.decode(
+              map["data"] as List<int>,
+            ),
+          ),
+        );
 }

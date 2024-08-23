@@ -20,12 +20,6 @@ class _HomeViewState extends State<HomeView> {
   String _meaningGuess = "";
 
   @override
-  void initState() {
-    context.read<KanjiBloc>().add(GetRandomSubjectEvent());
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<KanjiBloc, KanjiState>(
@@ -47,15 +41,11 @@ class _HomeViewState extends State<HomeView> {
             if (state.status == KanjiStatus.initial) {
               return Container();
             } else if (state.status == KanjiStatus.loading) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Working'),
-                  LoadingAnimationWidget.prograssiveDots(
-                    color: Colors.blueGrey,
-                    size: 50,
-                  )
-                ],
+              return Center(
+                child: LoadingAnimationWidget.inkDrop(
+                  color: Colors.white,
+                  size: 100,
+                ),
               );
             } else if (state.status == KanjiStatus.waitingForMeaning) {
               return Center(
