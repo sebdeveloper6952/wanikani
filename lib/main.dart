@@ -24,7 +24,6 @@ Future<void> main() async {
   final log = Logger("main");
 
   final dbPath = "${await getDatabasesPath()}/wanikani.db";
-  await deleteDatabase(dbPath);
   final db = await openDb(dbPath);
   final repo = KanjiSqliteRepo(
     db: db,
