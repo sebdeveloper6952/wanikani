@@ -21,7 +21,6 @@ Future<void> main() async {
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
-  final log = Logger("main");
 
   final dbPath = "${await getDatabasesPath()}/wanikani.db";
   final db = await openDb(dbPath);
