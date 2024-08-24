@@ -49,12 +49,14 @@ dependencies:
   haptic_feedback: ^0.5.1+1
   sqflite: ^2.3.3+1
   dio: ^5.6.0
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   json_serializable: ^6.8.0
   build_runner: ^2.4.11
+  flutter_launcher_icons: "^0.13.1"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -76,6 +78,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - assets/icons/eye.svg
     - assets/icons/eye_off.svg
     - assets/icons/right.svg
@@ -107,3 +110,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/japan.png"
+  min_sdk_android: 21 
+  macos:
+    generate: true
+    image_path: "assets/icons/japan.png"

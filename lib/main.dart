@@ -9,6 +9,7 @@ import 'package:wanikani/kanji/kanji_sqlite_repo.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:wanikani/wanikani/api.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   // we don't need the status bar
@@ -18,13 +19,15 @@ Future<void> main() async {
     overlays: [],
   );
 
+  await dotenv.load(fileName: ".env");
+
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
 
   final api = WanikaniApi(
-    "44a96d3d-772a-462e-a447-2dc67e3ba43f",
+    dotenv.env["WANIKANI_TOKEN"]!,
   );
 
   final dbPath = "${await getDatabasesPath()}/wanikani.db";
