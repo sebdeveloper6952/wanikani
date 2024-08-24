@@ -9,16 +9,15 @@ import 'package:wanikani/wanikani/models.dart';
 final _subjectsTable = "subjects";
 
 class KanjiSqliteRepo {
-  final WanikaniApi _api;
+  final WanikaniApi api;
+  final Database db;
   final Map<int, Subject> _subjects = {};
   final _log = Logger("KanjiSqliteRepo");
-  final Database db;
 
-  KanjiSqliteRepo({WanikaniApi? api, required this.db})
-      : _api = api ?? WanikaniApi();
+  KanjiSqliteRepo({required this.api, required this.db});
 
   Future<void> init() async {
-    final fetchUserResult = await _api.fetchUserInfo();
+    final fetchUserResult = await api.fetchUserInfo();
     if (fetchUserResult.isError()) {
       _log.severe(fetchUserResult.tryGetError());
       await _loadSubjectsFromDB();
@@ -32,7 +31,7 @@ class KanjiSqliteRepo {
       return;
     }
 
-    final subjectsResult = await _api.fetchSubjectsForLevel(user.level);
+    final subjectsResult = await api.fetchSubjectsForLevel(user.level);
     final subjects = subjectsResult.tryGetSuccess();
     if (subjects == null) {
       _log.severe(subjectsResult.tryGetError());

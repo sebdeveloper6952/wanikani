@@ -1,21 +1,31 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:wanikani/wanikani/models.dart';
 import 'package:multiple_result/multiple_result.dart';
-import 'package:http/http.dart' as http;
 
 class WanikaniApi {
-  final _apiUrl = "api.wanikani.com";
-  final _authToken = "44a96d3d-772a-462e-a447-2dc67e3ba43f";
+  final Dio _dio;
+
+  WanikaniApi(String authToken)
+      : _dio = Dio(
+          BaseOptions(
+            baseUrl: "https://api.wanikani.com/v2",
+            connectTimeout: const Duration(seconds: 3),
+            receiveTimeout: const Duration(seconds: 3),
+            headers: {"Authorization": "Bearer $authToken"},
+          ),
+        );
 
   Future<Result<User, String>> fetchUserInfo() async {
-    final url = Uri.https(_apiUrl, "/v2/user");
     try {
-      final response =
-          await http.get(url, headers: {"Authorization": "Bearer $_authToken"});
+      final response = await _dio.get("/user");
       if (response.statusCode == 200) {
-        final jsonBody = jsonDecode(response.body);
-        return Result.success(User.fromJson(jsonBody["data"]));
+        return Result.success(
+          User.fromJson(
+            response.data["data"],
+          ),
+        );
       } else {
         return Result.error("http ${response.statusCode}");
       }
@@ -31,18 +41,15 @@ class WanikaniApi {
       growable: false,
     ).join(",");
 
-    final url = Uri.https(
-      _apiUrl,
-      "/v2/subjects",
-      {"levels": levels},
-    );
-
     try {
-      final response =
-          await http.get(url, headers: {"Authorization": "Bearer $_authToken"});
+      final response = await _dio.get(
+        "/subjects",
+        queryParameters: {
+          "levels": levels,
+        },
+      );
       if (response.statusCode == 200) {
-        final jsonBody = jsonDecode(response.body);
-        final subjects = (jsonBody["data"] as List)
+        final subjects = (response.data["data"] as List)
             .map((item) => Subject.fromJson(item))
             .toList();
 

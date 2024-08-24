@@ -8,6 +8,7 @@ import 'package:wanikani/kanji/kanji_bloc.dart';
 import 'package:wanikani/kanji/kanji_sqlite_repo.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:wanikani/wanikani/api.dart';
 
 Future<void> main() async {
   // we don't need the status bar
@@ -22,9 +23,15 @@ Future<void> main() async {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
 
+  final api = WanikaniApi(
+    "44a96d3d-772a-462e-a447-2dc67e3ba43f",
+  );
+
   final dbPath = "${await getDatabasesPath()}/wanikani.db";
   final db = await openDb(dbPath);
+
   final repo = KanjiSqliteRepo(
+    api: api,
     db: db,
   );
 
