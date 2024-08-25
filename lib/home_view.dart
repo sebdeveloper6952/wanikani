@@ -43,7 +43,7 @@ class _HomeViewState extends State<HomeView> {
             } else if (state.status == KanjiStatus.loading) {
               return Center(
                 child: LoadingAnimationWidget.inkDrop(
-                  color: Colors.white,
+                  color: Colors.white70,
                   size: 100,
                 ),
               );
@@ -75,8 +75,8 @@ class _HomeViewState extends State<HomeView> {
                                   },
                                   icon: SvgPicture.asset(
                                     "assets/icons/eye.svg",
-                                    colorFilter: ColorFilter.mode(
-                                      Colors.white,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.white70,
                                       BlendMode.srcIn,
                                     ),
                                   ),
@@ -89,8 +89,8 @@ class _HomeViewState extends State<HomeView> {
                                   },
                                   icon: SvgPicture.asset(
                                     "assets/icons/right.svg",
-                                    colorFilter: ColorFilter.mode(
-                                      Colors.white,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.white70,
                                       BlendMode.srcIn,
                                     ),
                                   ),
@@ -138,45 +138,86 @@ class _HomeViewState extends State<HomeView> {
                                     ),
                                   ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                            ),
-                            child: TextField(
-                              onChanged: (value) => _meaningGuess = value,
-                              cursorColor: Utils.getColorForSubjectType(
-                                state.subject!.object,
-                              ),
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor:
-                                    Utils.getTextFieldColorForSubjectType(
-                                  state.subject!.object,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                labelText: "meaning",
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                context.read<KanjiBloc>().add(
-                                      AnswerSubjectMeaningEvent(
-                                        subjectId: state.subject!.id,
-                                        meaning: _meaningGuess,
+                          SizedBox(
+                            height: 64,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      onChanged: (value) =>
+                                          _meaningGuess = value,
+                                      onSubmitted: (value) {
+                                        context.read<KanjiBloc>().add(
+                                              AnswerSubjectMeaningEvent(
+                                                subjectId: state.subject!.id,
+                                                meaning: _meaningGuess,
+                                              ),
+                                            );
+                                      },
+                                      autofocus: true,
+                                      cursorColor: Utils.getColorForSubjectType(
+                                        state.subject!.object,
                                       ),
-                                    );
-                              },
-                              child: const Text("submit"),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Utils
+                                            .getTextFieldColorForSubjectType(
+                                          state.subject!.object,
+                                        ),
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(12),
+                                            bottomLeft: Radius.circular(12),
+                                          ),
+                                        ),
+                                        labelText: "meaning",
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: double.infinity,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        context.read<KanjiBloc>().add(
+                                              AnswerSubjectMeaningEvent(
+                                                subjectId: state.subject!.id,
+                                                meaning: _meaningGuess,
+                                              ),
+                                            );
+                                      },
+                                      style: ButtonStyle(
+                                        padding: WidgetStateProperty.all(
+                                          EdgeInsets.zero,
+                                        ),
+                                        shape: WidgetStateProperty.all(
+                                          const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(12),
+                                              bottomRight: Radius.circular(12),
+                                            ),
+                                          ),
+                                        ),
+                                        backgroundColor:
+                                            WidgetStateProperty.all(
+                                          Colors.white70,
+                                        ),
+                                        shadowColor: WidgetStateProperty.all(
+                                          Colors.transparent,
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        Icons.check,
+                                        color: Utils.getColorForSubjectType(
+                                          state.subject!.object,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -200,7 +241,7 @@ class _HomeViewState extends State<HomeView> {
                                   icon: SvgPicture.asset(
                                     "assets/icons/eye_off.svg",
                                     colorFilter: const ColorFilter.mode(
-                                      Colors.white,
+                                      Colors.white70,
                                       BlendMode.srcIn,
                                     ),
                                   ),
@@ -213,8 +254,8 @@ class _HomeViewState extends State<HomeView> {
                                   },
                                   icon: SvgPicture.asset(
                                     "assets/icons/right.svg",
-                                    colorFilter: ColorFilter.mode(
-                                      Colors.white,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.white70,
                                       BlendMode.srcIn,
                                     ),
                                   ),
@@ -224,7 +265,7 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           Text(
                             "Meaning: ${state.subject!.data.meanings[0].meaning}",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 24,
                             ),
                           ),
@@ -237,7 +278,7 @@ class _HomeViewState extends State<HomeView> {
             } else if (state.status == KanjiStatus.answerMeaningCorrect) {
               return SizedBox.expand(
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.green,
                   ),
                   child: Center(
@@ -267,7 +308,7 @@ class _HomeViewState extends State<HomeView> {
             } else if (state.status == KanjiStatus.incorrectAnswer) {
               return SizedBox.expand(
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.red,
                   ),
                   child: Center(
