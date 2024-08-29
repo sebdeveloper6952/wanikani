@@ -19,6 +19,304 @@ class _HomeViewState extends State<HomeView> {
   final _flipCardController = FlipCardController();
   String _meaningGuess = "";
 
+  Widget _frontWidget(KanjiState state) {
+    return Card(
+      color: Utils.getColorForSubjectType(
+        state.subject!.object,
+      ),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    _flipCardController.flipcard();
+                  },
+                  icon: SvgPicture.asset(
+                    "assets/icons/eye.svg",
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white70,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    context.read<KanjiBloc>().add(GetRandomSubjectEvent());
+                  },
+                  icon: SvgPicture.asset(
+                    "assets/icons/right.svg",
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white70,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            child: state.subject!.object == "radical"
+                ? state.subject!.data.characters != null
+                    ? Center(
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Text(
+                            state.subject!.data.characters![0],
+                            style: const TextStyle(
+                              fontSize: 96,
+                            ),
+                          ),
+                        ),
+                      )
+                    : SizedBox(
+                        height: 64,
+                        width: 64,
+                        child: ScalableImageWidget.fromSISource(
+                          si: ScalableImageSource.fromSvgHttpUrl(
+                            Uri.parse(
+                              state.subject!.data.characterImages![0].url,
+                            ),
+                            currentColor: Colors.white,
+                          ),
+                        ),
+                      )
+                : Center(
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        state.subject!.data.characters!,
+                        style: const TextStyle(
+                          fontSize: 96,
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          SizedBox(
+            height: 64,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      onChanged: (value) => _meaningGuess = value,
+                      onSubmitted: (value) {
+                        context.read<KanjiBloc>().add(
+                              AnswerSubjectMeaningEvent(
+                                subjectId: state.subject!.id,
+                                meaning: _meaningGuess,
+                              ),
+                            );
+                      },
+                      autofocus: true,
+                      cursorColor: Utils.getColorForSubjectType(
+                        state.subject!.object,
+                      ),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Utils.getTextFieldColorForSubjectType(
+                          state.subject!.object,
+                        ),
+                        border: const OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            bottomLeft: Radius.circular(12),
+                          ),
+                        ),
+                        labelText: "meaning",
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.read<KanjiBloc>().add(
+                              AnswerSubjectMeaningEvent(
+                                subjectId: state.subject!.id,
+                                meaning: _meaningGuess,
+                              ),
+                            );
+                      },
+                      style: ButtonStyle(
+                        padding: WidgetStateProperty.all(
+                          EdgeInsets.zero,
+                        ),
+                        shape: WidgetStateProperty.all(
+                          const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(12),
+                              bottomRight: Radius.circular(12),
+                            ),
+                          ),
+                        ),
+                        backgroundColor: WidgetStateProperty.all(
+                          Colors.white70,
+                        ),
+                        shadowColor: WidgetStateProperty.all(
+                          Colors.transparent,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        color: Utils.getColorForSubjectType(
+                          state.subject!.object,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _backWidget(KanjiState state) {
+    return Card(
+      color: Utils.getColorForSubjectType(
+        state.subject!.object,
+      ),
+      child: Card(
+        color: Colors.white70,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        _flipCardController.flipcard();
+                      },
+                      icon: SvgPicture.asset(
+                        "assets/icons/eye_off.svg",
+                        colorFilter: ColorFilter.mode(
+                          Utils.getColorForSubjectType(
+                            state.subject!.object,
+                          ),
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        context.read<KanjiBloc>().add(GetRandomSubjectEvent());
+                      },
+                      icon: SvgPicture.asset(
+                        "assets/icons/right.svg",
+                        colorFilter: ColorFilter.mode(
+                          Utils.getColorForSubjectType(
+                            state.subject!.object,
+                          ),
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Text(
+                "Meaning",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Utils.getColorForSubjectType(
+                    state.subject!.object,
+                  ),
+                ),
+              ),
+              Text(
+                state.subject!.data.meanings[0].meaning,
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Utils.getColorForSubjectType(
+                    state.subject!.object,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _answerCorrectWidget() {
+    return SizedBox.expand(
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.green,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                "assets/icons/check.svg",
+                colorFilter: ColorFilter.mode(
+                  Colors.green[200]!,
+                  BlendMode.srcIn,
+                ),
+                height: 96,
+              ),
+              Text(
+                "nice",
+                style: TextStyle(
+                  fontSize: 32,
+                  color: Colors.green[200],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _answerIncorrectWidget() {
+    return SizedBox.expand(
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.red,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                "assets/icons/close.svg",
+                colorFilter: ColorFilter.mode(
+                  Colors.red[200]!,
+                  BlendMode.srcIn,
+                ),
+                height: 96,
+              ),
+              Text(
+                "bad",
+                style: TextStyle(
+                  fontSize: 32,
+                  color: Colors.red[200],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,283 +356,15 @@ class _HomeViewState extends State<HomeView> {
                     animationDuration: const Duration(
                       milliseconds: 300,
                     ),
-                    frontWidget: Card(
-                      color: Utils.getColorForSubjectType(
-                        state.subject!.object,
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    _flipCardController.flipcard();
-                                  },
-                                  icon: SvgPicture.asset(
-                                    "assets/icons/eye.svg",
-                                    colorFilter: const ColorFilter.mode(
-                                      Colors.white70,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    context
-                                        .read<KanjiBloc>()
-                                        .add(GetRandomSubjectEvent());
-                                  },
-                                  icon: SvgPicture.asset(
-                                    "assets/icons/right.svg",
-                                    colorFilter: const ColorFilter.mode(
-                                      Colors.white70,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: state.subject!.object == "radical"
-                                ? state.subject!.data.characters != null
-                                    ? Center(
-                                        child: FittedBox(
-                                          fit: BoxFit.contain,
-                                          child: Text(
-                                            state.subject!.data.characters![0],
-                                            style: const TextStyle(
-                                              fontSize: 96,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : SizedBox(
-                                        height: 64,
-                                        width: 64,
-                                        child: ScalableImageWidget.fromSISource(
-                                          si: ScalableImageSource
-                                              .fromSvgHttpUrl(
-                                            Uri.parse(
-                                              state.subject!.data
-                                                  .characterImages![0].url,
-                                            ),
-                                            currentColor: Colors.white,
-                                          ),
-                                        ),
-                                      )
-                                : Center(
-                                    child: FittedBox(
-                                      fit: BoxFit.contain,
-                                      child: Text(
-                                        state.subject!.data.characters!,
-                                        style: const TextStyle(
-                                          fontSize: 96,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                          ),
-                          SizedBox(
-                            height: 64,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      onChanged: (value) =>
-                                          _meaningGuess = value,
-                                      onSubmitted: (value) {
-                                        context.read<KanjiBloc>().add(
-                                              AnswerSubjectMeaningEvent(
-                                                subjectId: state.subject!.id,
-                                                meaning: _meaningGuess,
-                                              ),
-                                            );
-                                      },
-                                      autofocus: true,
-                                      cursorColor: Utils.getColorForSubjectType(
-                                        state.subject!.object,
-                                      ),
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Utils
-                                            .getTextFieldColorForSubjectType(
-                                          state.subject!.object,
-                                        ),
-                                        border: const OutlineInputBorder(
-                                          borderSide: BorderSide.none,
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(12),
-                                            bottomLeft: Radius.circular(12),
-                                          ),
-                                        ),
-                                        labelText: "meaning",
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        context.read<KanjiBloc>().add(
-                                              AnswerSubjectMeaningEvent(
-                                                subjectId: state.subject!.id,
-                                                meaning: _meaningGuess,
-                                              ),
-                                            );
-                                      },
-                                      style: ButtonStyle(
-                                        padding: WidgetStateProperty.all(
-                                          EdgeInsets.zero,
-                                        ),
-                                        shape: WidgetStateProperty.all(
-                                          const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(12),
-                                              bottomRight: Radius.circular(12),
-                                            ),
-                                          ),
-                                        ),
-                                        backgroundColor:
-                                            WidgetStateProperty.all(
-                                          Colors.white70,
-                                        ),
-                                        shadowColor: WidgetStateProperty.all(
-                                          Colors.transparent,
-                                        ),
-                                      ),
-                                      child: Icon(
-                                        Icons.check,
-                                        color: Utils.getColorForSubjectType(
-                                          state.subject!.object,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    backWidget: Card(
-                      color: Utils.getColorForSubjectType(
-                        state.subject!.object,
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    _flipCardController.flipcard();
-                                  },
-                                  icon: SvgPicture.asset(
-                                    "assets/icons/eye_off.svg",
-                                    colorFilter: const ColorFilter.mode(
-                                      Colors.white70,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    context
-                                        .read<KanjiBloc>()
-                                        .add(GetRandomSubjectEvent());
-                                  },
-                                  icon: SvgPicture.asset(
-                                    "assets/icons/right.svg",
-                                    colorFilter: const ColorFilter.mode(
-                                      Colors.white70,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Text(
-                            "Meaning: ${state.subject!.data.meanings[0].meaning}",
-                            style: const TextStyle(
-                              fontSize: 24,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    frontWidget: _frontWidget(state),
+                    backWidget: _backWidget(state),
                   ),
                 ),
               );
             } else if (state.status == KanjiStatus.answerMeaningCorrect) {
-              return SizedBox.expand(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.green,
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/icons/check.svg",
-                          colorFilter: ColorFilter.mode(
-                            Colors.green[200]!,
-                            BlendMode.srcIn,
-                          ),
-                          height: 96,
-                        ),
-                        Text(
-                          "nice",
-                          style: TextStyle(
-                            fontSize: 32,
-                            color: Colors.green[200],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+              return _answerCorrectWidget();
             } else if (state.status == KanjiStatus.incorrectAnswer) {
-              return SizedBox.expand(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/icons/close.svg",
-                          colorFilter: ColorFilter.mode(
-                            Colors.red[200]!,
-                            BlendMode.srcIn,
-                          ),
-                          height: 96,
-                        ),
-                        Text(
-                          "bad",
-                          style: TextStyle(
-                            fontSize: 32,
-                            color: Colors.red[200],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+              return _answerIncorrectWidget();
             }
 
             return Center(child: Text(state.status.toString()));
