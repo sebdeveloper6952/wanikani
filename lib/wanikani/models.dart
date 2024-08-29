@@ -57,6 +57,19 @@ class Meaning {
 }
 
 @JsonSerializable()
+class Reading {
+  final String reading;
+
+  Reading({
+    required this.reading,
+  });
+
+  factory Reading.fromJson(Map<String, dynamic> json) =>
+      _$ReadingFromJson(json);
+  Map<String, dynamic> toJson() => _$ReadingToJson(this);
+}
+
+@JsonSerializable()
 class CharacterImage {
   final String url;
 
@@ -83,6 +96,7 @@ class SubjectData {
   final List<AuxiliaryMeaning> auxiliaryMeanings;
   final List<Meaning> meanings;
   final List<CharacterImage>? characterImages;
+  final List<Reading>? readings;
 
   SubjectData({
     required this.characters,
@@ -97,6 +111,7 @@ class SubjectData {
     required this.auxiliaryMeanings,
     required this.meanings,
     required this.characterImages,
+    required this.readings,
   });
 
   factory SubjectData.fromJson(Map<String, dynamic> json) =>

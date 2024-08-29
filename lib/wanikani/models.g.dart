@@ -75,6 +75,21 @@ Map<String, dynamic> _$MeaningToJson(Meaning instance) => <String, dynamic>{
       'accepted_answer': instance.acceptedAnswer,
     };
 
+Reading _$ReadingFromJson(Map<String, dynamic> json) => $checkedCreate(
+      'Reading',
+      json,
+      ($checkedConvert) {
+        final val = Reading(
+          reading: $checkedConvert('reading', (v) => v as String),
+        );
+        return val;
+      },
+    );
+
+Map<String, dynamic> _$ReadingToJson(Reading instance) => <String, dynamic>{
+      'reading': instance.reading,
+    };
+
 CharacterImage _$CharacterImageFromJson(Map<String, dynamic> json) =>
     $checkedCreate(
       'CharacterImage',
@@ -128,6 +143,11 @@ SubjectData _$SubjectDataFromJson(Map<String, dynamic> json) => $checkedCreate(
                   ?.map(
                       (e) => CharacterImage.fromJson(e as Map<String, dynamic>))
                   .toList()),
+          readings: $checkedConvert(
+              'readings',
+              (v) => (v as List<dynamic>?)
+                  ?.map((e) => Reading.fromJson(e as Map<String, dynamic>))
+                  .toList()),
         );
         return val;
       },
@@ -159,6 +179,7 @@ Map<String, dynamic> _$SubjectDataToJson(SubjectData instance) =>
       'meanings': instance.meanings.map((e) => e.toJson()).toList(),
       'character_images':
           instance.characterImages?.map((e) => e.toJson()).toList(),
+      'readings': instance.readings?.map((e) => e.toJson()).toList(),
     };
 
 Subject _$SubjectFromJson(Map<String, dynamic> json) => $checkedCreate(
