@@ -81,6 +81,7 @@ Reading _$ReadingFromJson(Map<String, dynamic> json) => $checkedCreate(
       ($checkedConvert) {
         final val = Reading(
           reading: $checkedConvert('reading', (v) => v as String),
+          type: $checkedConvert('type', (v) => v as String?),
         );
         return val;
       },
@@ -88,6 +89,7 @@ Reading _$ReadingFromJson(Map<String, dynamic> json) => $checkedCreate(
 
 Map<String, dynamic> _$ReadingToJson(Reading instance) => <String, dynamic>{
       'reading': instance.reading,
+      'type': instance.type,
     };
 
 CharacterImage _$CharacterImageFromJson(Map<String, dynamic> json) =>

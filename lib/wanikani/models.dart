@@ -59,9 +59,11 @@ class Meaning {
 @JsonSerializable()
 class Reading {
   final String reading;
+  final String? type;
 
   Reading({
     required this.reading,
+    required this.type,
   });
 
   factory Reading.fromJson(Map<String, dynamic> json) =>

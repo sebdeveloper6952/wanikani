@@ -189,6 +189,11 @@ class _HomeViewState extends State<HomeView> {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        Divider(
+          color: Utils.getColorForSubjectType(
+            state.subject!.object,
+          ),
+        ),
         Text(
           "Readings",
           style: TextStyle(
@@ -204,7 +209,7 @@ class _HomeViewState extends State<HomeView> {
               ? state.subject!.data.readings!
                   .map(
                     (i) => Text(
-                      i.reading,
+                      "${i.reading} (${i.type})",
                       style: TextStyle(
                         color: Utils.getColorForSubjectType(
                           state.subject!.object,
@@ -291,11 +296,6 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
               ),
-              Divider(
-                color: Utils.getColorForSubjectType(
-                  state.subject!.object,
-                ),
-              ),
               Text(
                 "Aux Meanings",
                 style: TextStyle(
@@ -312,11 +312,6 @@ class _HomeViewState extends State<HomeView> {
                   color: Utils.getColorForSubjectType(
                     state.subject!.object,
                   ),
-                ),
-              ),
-              Divider(
-                color: Utils.getColorForSubjectType(
-                  state.subject!.object,
                 ),
               ),
               _readingsWidget(state),
