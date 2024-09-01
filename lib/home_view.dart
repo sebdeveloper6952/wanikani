@@ -180,13 +180,84 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
+  Widget _meaningWidget(KanjiState state) {
+    if (state.subject == null) {
+      return Container();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Meaning",
+          style: TextStyle(
+            fontSize: 12,
+            color: Utils.getColorForSubjectType(
+              state.subject!.object,
+            ),
+          ),
+        ),
+        Text(
+          state.subject!.data.meanings[0].meaning,
+          style: TextStyle(
+            fontSize: 24,
+            color: Utils.getColorForSubjectType(
+              state.subject!.object,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _auxMeaningsWidget(KanjiState state) {
+    if (state.subject!.data.auxiliaryMeanings.isEmpty) {
+      return Container();
+    }
+
+    String auxMeanings = state.subject!.data.auxiliaryMeanings
+        .fold("", (m, next) => "$m,${next.meaning}");
+    if (auxMeanings.isNotEmpty) {
+      auxMeanings = auxMeanings.substring(1);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(
+          color: Utils.getColorForSubjectType(
+            state.subject!.object,
+          ),
+        ),
+        Text(
+          "Aux Meanings",
+          style: TextStyle(
+            fontSize: 12,
+            color: Utils.getColorForSubjectType(
+              state.subject!.object,
+            ),
+          ),
+        ),
+        Text(
+          auxMeanings,
+          style: TextStyle(
+            fontSize: 16,
+            color: Utils.getColorForSubjectType(
+              state.subject!.object,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   Widget _readingsWidget(KanjiState state) {
     if (state.subject!.data.readings == null) {
       return Container();
     }
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Divider(
@@ -204,12 +275,12 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: state.subject!.data.readings!.isNotEmpty
               ? state.subject!.data.readings!
                   .map(
                     (i) => Text(
-                      "${i.reading} (${i.type})",
+                      "${i.reading} ${i.type == null ? '' : '(${i.type})'}",
                       style: TextStyle(
                         color: Utils.getColorForSubjectType(
                           state.subject!.object,
@@ -225,12 +296,6 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Widget _backWidget(KanjiState state) {
-    String auxMeanings = state.subject!.data.auxiliaryMeanings
-        .fold("", (m, next) => "$m,${next.meaning}");
-    if (auxMeanings.isNotEmpty) {
-      auxMeanings = auxMeanings.substring(1);
-    }
-
     return Card(
       color: Utils.getColorForSubjectType(
         state.subject!.object,
@@ -278,42 +343,8 @@ class _HomeViewState extends State<HomeView> {
                   ],
                 ),
               ),
-              Text(
-                "Meaning",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Utils.getColorForSubjectType(
-                    state.subject!.object,
-                  ),
-                ),
-              ),
-              Text(
-                state.subject!.data.meanings[0].meaning,
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Utils.getColorForSubjectType(
-                    state.subject!.object,
-                  ),
-                ),
-              ),
-              Text(
-                "Aux Meanings",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Utils.getColorForSubjectType(
-                    state.subject!.object,
-                  ),
-                ),
-              ),
-              Text(
-                auxMeanings,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Utils.getColorForSubjectType(
-                    state.subject!.object,
-                  ),
-                ),
-              ),
+              _meaningWidget(state),
+              _auxMeaningsWidget(state),
               _readingsWidget(state),
             ],
           ),
