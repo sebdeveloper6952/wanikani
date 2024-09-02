@@ -20,6 +20,10 @@ class _HomeViewState extends State<HomeView> {
   String _meaningGuess = "";
 
   Widget _frontWidget(KanjiState state) {
+    if (state.subject == null) {
+      return Container();
+    }
+
     return Card(
       color: Utils.getColorForSubjectType(
         state.subject!.object,
@@ -29,8 +33,32 @@ class _HomeViewState extends State<HomeView> {
           SizedBox(
             height: 50,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Container(
+                  margin: const EdgeInsets.only(left: 8),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 4,
+                    horizontal: 20,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Colors.white70,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(
+                        10,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    state.subject!.object,
+                    style: TextStyle(
+                      color: Utils.getColorForSubjectType(
+                        state.subject!.object,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(child: Container()),
                 IconButton(
                   onPressed: () {
                     _flipCardController.flipcard();
