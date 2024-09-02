@@ -501,15 +501,12 @@ class _HomeViewState extends State<HomeView> {
               prevState.status != KanjiStatus.incorrectAnswer;
         },
         listener: (ctx, state) async {
-          var hapticsType = HapticsType.success;
-
-          if (state.status == KanjiStatus.answerMeaningCorrect) {
-          } else if (state.status == KanjiStatus.incorrectAnswer) {
-            hapticsType = HapticsType.error;
-          }
-
           if (await Haptics.canVibrate()) {
-            Haptics.vibrate(hapticsType);
+            if (state.status == KanjiStatus.answerMeaningCorrect) {
+              Haptics.vibrate(HapticsType.success);
+            } else if (state.status == KanjiStatus.incorrectAnswer) {
+              Haptics.vibrate(HapticsType.error);
+            }
           }
         },
         child: BlocBuilder<KanjiBloc, KanjiState>(
