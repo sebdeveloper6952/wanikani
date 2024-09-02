@@ -84,6 +84,9 @@ flutter:
     - assets/icons/right.svg
     - assets/icons/check.svg
     - assets/icons/close.svg
+    - assets/icons/book.svg
+    - assets/icons/bookmark.svg
+    - assets/icons/soundwave.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

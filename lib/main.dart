@@ -80,7 +80,7 @@ class _MyApp extends State<MyApp> {
     );
 
     return baseTheme.copyWith(
-      textTheme: GoogleFonts.firaCodeTextTheme(baseTheme.textTheme),
+      textTheme: GoogleFonts.montserratTextTheme(baseTheme.textTheme),
     );
   }
 

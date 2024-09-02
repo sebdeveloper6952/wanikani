@@ -188,14 +188,30 @@ class _HomeViewState extends State<HomeView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Meaning",
-          style: TextStyle(
-            fontSize: 12,
-            color: Utils.getColorForSubjectType(
-              state.subject!.object,
+        Row(
+          children: [
+            SvgPicture.asset(
+              "assets/icons/book.svg",
+              colorFilter: ColorFilter.mode(
+                Utils.getColorForSubjectType(
+                  state.subject!.object,
+                ),
+                BlendMode.srcIn,
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: Text(
+                "Meaning",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Utils.getColorForSubjectType(
+                    state.subject!.object,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         Text(
           state.subject!.data.meanings[0].meaning,
@@ -229,14 +245,30 @@ class _HomeViewState extends State<HomeView> {
             state.subject!.object,
           ),
         ),
-        Text(
-          "Aux Meanings",
-          style: TextStyle(
-            fontSize: 12,
-            color: Utils.getColorForSubjectType(
-              state.subject!.object,
+        Row(
+          children: [
+            SvgPicture.asset(
+              "assets/icons/bookmark.svg",
+              colorFilter: ColorFilter.mode(
+                Utils.getColorForSubjectType(
+                  state.subject!.object,
+                ),
+                BlendMode.srcIn,
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: Text(
+                "Aux Meanings",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Utils.getColorForSubjectType(
+                    state.subject!.object,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         Text(
           auxMeanings,
@@ -265,14 +297,30 @@ class _HomeViewState extends State<HomeView> {
             state.subject!.object,
           ),
         ),
-        Text(
-          "Readings",
-          style: TextStyle(
-            fontSize: 12,
-            color: Utils.getColorForSubjectType(
-              state.subject!.object,
+        Row(
+          children: [
+            SvgPicture.asset(
+              "assets/icons/soundwave.svg",
+              colorFilter: ColorFilter.mode(
+                Utils.getColorForSubjectType(
+                  state.subject!.object,
+                ),
+                BlendMode.srcIn,
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: Text(
+                "Readings",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Utils.getColorForSubjectType(
+                    state.subject!.object,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
