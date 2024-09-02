@@ -17,7 +17,6 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final _flipCardController = FlipCardController();
-  String _meaningGuess = "";
 
   Widget _frontWidget(KanjiState state) {
     if (state.subject == null) {
@@ -52,6 +51,7 @@ class _HomeViewState extends State<HomeView> {
                   child: Text(
                     state.subject!.object,
                     style: TextStyle(
+                      fontSize: 12,
                       color: Utils.getColorForSubjectType(
                         state.subject!.object,
                       ),
@@ -131,16 +131,18 @@ class _HomeViewState extends State<HomeView> {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      onChanged: (value) => _meaningGuess = value,
-                      onSubmitted: (value) {
+                    child: TextFormField(
+                      initialValue: state.meaningGuess,
+                      onChanged: (value) {
                         context.read<KanjiBloc>().add(
-                              AnswerSubjectMeaningEvent(
-                                subjectId: state.subject!.id,
-                                meaning: _meaningGuess,
+                              UpdateSubjectMeaningEvent(
+                                meaning: value,
                               ),
                             );
                       },
+                      onFieldSubmitted: (value) => context
+                          .read<KanjiBloc>()
+                          .add(AnswerSubjectMeaningEvent()),
                       autofocus: true,
                       cursorColor: Utils.getColorForSubjectType(
                         state.subject!.object,
@@ -166,10 +168,7 @@ class _HomeViewState extends State<HomeView> {
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<KanjiBloc>().add(
-                              AnswerSubjectMeaningEvent(
-                                subjectId: state.subject!.id,
-                                meaning: _meaningGuess,
-                              ),
+                              AnswerSubjectMeaningEvent(),
                             );
                       },
                       style: ButtonStyle(
@@ -502,12 +501,15 @@ class _HomeViewState extends State<HomeView> {
               prevState.status != KanjiStatus.incorrectAnswer;
         },
         listener: (ctx, state) async {
+          var hapticsType = HapticsType.success;
+
+          if (state.status == KanjiStatus.answerMeaningCorrect) {
+          } else if (state.status == KanjiStatus.incorrectAnswer) {
+            hapticsType = HapticsType.error;
+          }
+
           if (await Haptics.canVibrate()) {
-            if (state.status == KanjiStatus.answerMeaningCorrect) {
-              Haptics.vibrate(HapticsType.success);
-            } else if (state.status == KanjiStatus.incorrectAnswer) {
-              Haptics.vibrate(HapticsType.error);
-            }
+            Haptics.vibrate(hapticsType);
           }
         },
         child: BlocBuilder<KanjiBloc, KanjiState>(

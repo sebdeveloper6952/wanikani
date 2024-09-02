@@ -15,6 +15,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
     required this.repo,
   }) : super(KanjiState.initial()) {
     on<GetRandomSubjectEvent>(_onGetRandomSubject);
+    on<UpdateSubjectMeaningEvent>(_onUpdateSubjectMeaning);
     on<AnswerSubjectMeaningEvent>(_onAnswerSubjectMeaning);
 
     _init();
@@ -31,6 +32,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
   ) async {
     emit(state.copyWith(
       status: KanjiStatus.loading,
+      meaningGuess: "",
     ));
 
     final subject = await repo.getRandomSubject();
@@ -43,17 +45,35 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
     );
   }
 
+  Future<void> _onUpdateSubjectMeaning(
+    UpdateSubjectMeaningEvent event,
+    Emitter<KanjiState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        meaningGuess: event.meaning,
+      ),
+    );
+  }
+
   Future<void> _onAnswerSubjectMeaning(
     AnswerSubjectMeaningEvent event,
     Emitter<KanjiState> emit,
   ) async {
+    if (state.subject == null) {
+      return;
+    }
+
     emit(
       state.copyWith(
         status: KanjiStatus.loading,
       ),
     );
 
-    final subject = await repo.getSubjectById(event.subjectId);
+    final subject = await repo.getSubjectById(
+      state.subject!.id,
+    );
+
     if (subject == null) {
       emit(
         state.copyWith(
@@ -64,7 +84,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
     }
 
     for (var meaning in subject.data.meanings) {
-      if (meaning.meaning.toLowerCase() == event.meaning.toLowerCase()) {
+      if (meaning.meaning.toLowerCase() == state.meaningGuess.toLowerCase()) {
         emit(
           state.copyWith(
             status: KanjiStatus.answerMeaningCorrect,

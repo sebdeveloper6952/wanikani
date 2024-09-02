@@ -6,14 +6,16 @@ sealed class KanjiEvent {
 
 final class GetRandomSubjectEvent extends KanjiEvent {}
 
-final class AnswerSubjectMeaningEvent extends KanjiEvent {
-  final int subjectId;
+final class UpdateSubjectMeaningEvent extends KanjiEvent {
   final String meaning;
 
-  AnswerSubjectMeaningEvent({
-    required this.subjectId,
+  UpdateSubjectMeaningEvent({
     required this.meaning,
   });
+}
+
+final class AnswerSubjectMeaningEvent extends KanjiEvent {
+  AnswerSubjectMeaningEvent();
 }
 
 final class AnswerSubjectMeaningResultEvent extends KanjiEvent {
