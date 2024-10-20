@@ -39,7 +39,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
 
     emit(
       state.copyWith(
-        status: KanjiStatus.waitingForMeaning,
+        status: KanjiStatus.waitingForWriting,
         subject: subject,
       ),
     );
@@ -93,7 +93,13 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
 
         await Future.delayed(
           const Duration(seconds: 1),
-          () => add(GetRandomSubjectEvent()),
+          () {
+            emit(
+              state.copyWith(
+                status: KanjiStatus.waitingForWriting,
+              ),
+            );
+          },
         );
 
         return;
