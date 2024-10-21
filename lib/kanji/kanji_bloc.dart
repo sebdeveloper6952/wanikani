@@ -1,7 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:wanikani/kanji/kanji_sqlite_repo.dart';
+import 'package:wanikani/wanikani/api.dart';
 import 'package:wanikani/wanikani/models.dart';
 
 part 'kanji_event.dart';
@@ -9,21 +12,38 @@ part 'kanji_state.dart';
 
 class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
   final log = Logger('KanjiBloc');
-  final KanjiSqliteRepo repo;
+  final _tokenKey = "WANIKANI_TOKEN";
+  final Database _db;
+  final SharedPreferences _storage;
+  late KanjiSqliteRepo _repo;
 
-  KanjiBloc({
-    required this.repo,
-  }) : super(KanjiState.initial()) {
+  KanjiBloc(
+    Database db,
+    SharedPreferences storage,
+  )   : _db = db,
+        _storage = storage,
+        super(KanjiState.initial()) {
     on<GetRandomSubjectEvent>(_onGetRandomSubject);
     on<UpdateSubjectMeaningEvent>(_onUpdateSubjectMeaning);
     on<AnswerSubjectMeaningEvent>(_onAnswerSubjectMeaning);
     on<AnswerSubjectReadingEvent>(_onAnswerSubjectReading);
+    on<MissingApiTokenEvent>(_onMissingApiToken);
+    on<SetApiTokenEvent>(_onSetApiToken);
 
     _init();
   }
 
   Future<void> _init() async {
-    await repo.init();
+    final token = _storage.getString(_tokenKey);
+    if (token == null) {
+      add(MissingApiTokenEvent());
+      return;
+    }
+
+    final api = WanikaniApi(token);
+    _repo = KanjiSqliteRepo(api: api, db: _db);
+    await _repo.init();
+
     add(GetRandomSubjectEvent());
   }
 
@@ -36,11 +56,11 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       meaningGuess: "",
     ));
 
-    final subject = await repo.getRandomSubject();
+    final subject = await _repo.getRandomSubject();
 
     final readings = <String>[];
     if (subject!.object.toLowerCase() != "radical") {
-      final randomSubjects = await repo.getRandomSubjectsWithType(
+      final randomSubjects = await _repo.getRandomSubjectsWithType(
         3,
         subject.object,
       );
@@ -92,7 +112,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       ),
     );
 
-    final subject = await repo.getSubjectById(
+    final subject = await _repo.getSubjectById(
       state.subject!.id,
     );
 
@@ -158,7 +178,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       ),
     );
 
-    final subject = await repo.getSubjectById(
+    final subject = await _repo.getSubjectById(
       state.subject!.id,
     );
 
@@ -204,5 +224,34 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
         ),
       ),
     );
+  }
+
+  Future<void> _onMissingApiToken(
+    MissingApiTokenEvent event,
+    Emitter<KanjiState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: KanjiStatus.missingApiToken,
+      ),
+    );
+  }
+
+  Future<void> _onSetApiToken(
+    SetApiTokenEvent event,
+    Emitter<KanjiState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: KanjiStatus.loading,
+      ),
+    );
+
+    final api = WanikaniApi(event.token);
+    _repo = KanjiSqliteRepo(api: api, db: _db);
+    await _repo.init();
+    _storage.setString(_tokenKey, event.token);
+
+    add(GetRandomSubjectEvent());
   }
 }

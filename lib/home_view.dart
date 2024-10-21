@@ -17,6 +17,47 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final _flipCardController = FlipCardController();
+  String _token = "";
+
+  Widget _missingApiTokenWidget(KanjiState state) {
+    return Card(
+      color: Colors.grey[200],
+      shadowColor: Colors.transparent,
+      child: Column(
+        children: [
+          Card(
+            margin: const EdgeInsets.all(4),
+            color: Colors.blue[100],
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  SvgPicture.asset(
+                    "assets/icons/information.svg",
+                    colorFilter: ColorFilter.mode(
+                      Colors.blue[900]!,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      "Paste the WaniKani Token here and click save",
+                      style: TextStyle(
+                        color: Colors.blue[900],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          _tokenTextForm(state),
+        ],
+      ),
+    );
+  }
 
   Widget _subjectWidget(KanjiState state) {
     return Expanded(
@@ -59,7 +100,10 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _frontCardTopBarWidget(KanjiState state) {
+  Widget _frontCardTopBarWidget(
+    BuildContext context,
+    KanjiState state,
+  ) {
     return SizedBox(
       height: 50,
       child: Row(
@@ -90,6 +134,18 @@ class _HomeViewState extends State<HomeView> {
             ),
           ),
           Expanded(child: Container()),
+          IconButton(
+            onPressed: () {
+              context.read<KanjiBloc>().add(MissingApiTokenEvent());
+            },
+            icon: SvgPicture.asset(
+              "assets/icons/settings.svg",
+              colorFilter: const ColorFilter.mode(
+                Colors.white70,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
           IconButton(
             onPressed: () {
               _flipCardController.flipcard();
@@ -154,7 +210,7 @@ class _HomeViewState extends State<HomeView> {
                       bottomLeft: Radius.circular(12),
                     ),
                   ),
-                  labelText: "meaning",
+                  labelText: "Meaning",
                 ),
               ),
             ),
@@ -185,10 +241,11 @@ class _HomeViewState extends State<HomeView> {
                     Colors.transparent,
                   ),
                 ),
-                child: Icon(
-                  Icons.check,
-                  color: Utils.getColorForSubjectType(
-                    state.subject!.object,
+                child: SvgPicture.asset(
+                  "assets/icons/check.svg",
+                  colorFilter: ColorFilter.mode(
+                    Utils.getColorForSubjectType(state.subject!.object),
+                    BlendMode.srcIn,
                   ),
                 ),
               ),
@@ -199,7 +256,91 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _frontCardMeaningWidget(KanjiState state) {
+  Widget _tokenTextForm(KanjiState state) {
+    return SizedBox(
+      height: 64,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                initialValue: state.meaningGuess,
+                onChanged: (value) {
+                  _token = value;
+                },
+                autofocus: true,
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                style: TextStyle(
+                  color: Colors.grey[900],
+                ),
+                cursorColor: Colors.grey[900],
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey[300],
+                  border: const OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12),
+                    ),
+                  ),
+                  labelText: "Token",
+                  labelStyle: TextStyle(
+                    color: Colors.grey[900],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.read<KanjiBloc>().add(
+                        SetApiTokenEvent(token: _token),
+                      );
+                  _token = "";
+                },
+                style: ButtonStyle(
+                  padding: WidgetStateProperty.all(
+                    EdgeInsets.zero,
+                  ),
+                  shape: WidgetStateProperty.all(
+                    const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(12),
+                        bottomRight: Radius.circular(12),
+                      ),
+                    ),
+                  ),
+                  backgroundColor: WidgetStateProperty.all(
+                    Colors.grey[400],
+                  ),
+                  shadowColor: WidgetStateProperty.all(
+                    Colors.transparent,
+                  ),
+                ),
+                child: SvgPicture.asset(
+                  "assets/icons/save.svg",
+                  colorFilter: ColorFilter.mode(
+                    Colors.grey[900]!,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _frontCardMeaningWidget(
+    BuildContext context,
+    KanjiState state,
+  ) {
     if (state.subject == null) {
       return Container();
     }
@@ -210,7 +351,7 @@ class _HomeViewState extends State<HomeView> {
       ),
       child: Column(
         children: [
-          _frontCardTopBarWidget(state),
+          _frontCardTopBarWidget(context, state),
           _subjectWidget(state),
           _frontCardMeaningTextForm(state),
         ],
@@ -218,7 +359,10 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _frontCardReadingWidget(KanjiState state) {
+  Widget _frontCardReadingWidget(
+    BuildContext context,
+    KanjiState state,
+  ) {
     if (state.subject == null) {
       return Container();
     }
@@ -229,37 +373,40 @@ class _HomeViewState extends State<HomeView> {
       ),
       child: Column(
         children: [
-          _frontCardTopBarWidget(state),
+          _frontCardTopBarWidget(context, state),
           _subjectWidget(state),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              ...state.readingGuesses.map(
-                (reading) => ElevatedButton(
-                  onPressed: () {
-                    context.read<KanjiBloc>().add(
-                          AnswerSubjectReadingEvent(
-                            reading: reading,
-                          ),
-                        );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(
-                      24,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ...state.readingGuesses.map(
+                  (reading) => ElevatedButton(
+                    onPressed: () {
+                      context.read<KanjiBloc>().add(
+                            AnswerSubjectReadingEvent(
+                              reading: reading,
+                            ),
+                          );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(
+                        24,
+                      ),
+                      shadowColor: Colors.transparent,
+                      backgroundColor: Colors.white70,
+                      foregroundColor: Utils.getColorForSubjectType(
+                        state.subject!.object,
+                      ),
                     ),
-                    shadowColor: Colors.transparent,
-                    backgroundColor: Colors.white70,
-                    foregroundColor: Utils.getColorForSubjectType(
-                      state.subject!.object,
+                    child: Text(
+                      reading,
                     ),
-                  ),
-                  child: Text(
-                    reading,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -570,7 +717,15 @@ class _HomeViewState extends State<HomeView> {
         },
         child: BlocBuilder<KanjiBloc, KanjiState>(
           builder: (ctx, state) {
-            if (state.status == KanjiStatus.initial) {
+            if (state.status == KanjiStatus.missingApiToken) {
+              return Center(
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: _missingApiTokenWidget(state),
+                ),
+              );
+            } else if (state.status == KanjiStatus.initial) {
               return Container();
             } else if (state.status == KanjiStatus.loading) {
               return Center(
@@ -590,7 +745,10 @@ class _HomeViewState extends State<HomeView> {
                     animationDuration: const Duration(
                       milliseconds: 300,
                     ),
-                    frontWidget: _frontCardMeaningWidget(state),
+                    frontWidget: _frontCardMeaningWidget(
+                      context,
+                      state,
+                    ),
                     backWidget: _backWidget(state),
                   ),
                 ),
@@ -606,7 +764,10 @@ class _HomeViewState extends State<HomeView> {
                     animationDuration: const Duration(
                       milliseconds: 300,
                     ),
-                    frontWidget: _frontCardReadingWidget(state),
+                    frontWidget: _frontCardReadingWidget(
+                      context,
+                      state,
+                    ),
                     backWidget: _backWidget(state),
                   ),
                 ),

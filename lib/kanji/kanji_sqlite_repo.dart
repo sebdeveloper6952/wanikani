@@ -6,7 +6,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:wanikani/wanikani/api.dart';
 import 'package:wanikani/wanikani/models.dart';
 
-final _subjectsTable = "subjects";
+const _subjectsTable = "subjects";
 
 class KanjiSqliteRepo {
   final WanikaniApi api;

@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wanikani/db/db.dart';
 import 'package:wanikani/home_view.dart';
 import 'package:wanikani/kanji/kanji_bloc.dart';
-import 'package:wanikani/kanji/kanji_sqlite_repo.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:wanikani/wanikani/api.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   // we don't need the status bar
@@ -19,33 +17,19 @@ Future<void> main() async {
     overlays: [],
   );
 
-  await dotenv.load(fileName: ".env");
-
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: ${record.message}');
   });
 
-  final api = WanikaniApi(
-    dotenv.env["WANIKANI_TOKEN"]!,
-  );
-
+  final storage = await SharedPreferences.getInstance();
   final dbPath = "${await getDatabasesPath()}/wanikani.db";
   final db = await openDb(dbPath);
 
-  final repo = KanjiSqliteRepo(
-    api: api,
-    db: db,
-  );
-
-  final kanjiBloc = KanjiBloc(
-    repo: repo,
-  );
-
   runApp(
     MyApp(
-      kanjiBloc: kanjiBloc,
-      repo: repo,
+      db: db,
+      storage: storage,
     ),
   );
 }
@@ -53,13 +37,13 @@ Future<void> main() async {
 class MyApp extends StatefulWidget {
   const MyApp({
     super.key,
-    required KanjiBloc kanjiBloc,
-    required KanjiSqliteRepo repo,
-  })  : _kanjiBloc = kanjiBloc,
-        _repo = repo;
+    required Database db,
+    required SharedPreferences storage,
+  })  : _db = db,
+        _storage = storage;
 
-  final KanjiBloc _kanjiBloc;
-  final KanjiSqliteRepo _repo;
+  final Database _db;
+  final SharedPreferences _storage;
 
   @override
   createState() => _MyApp();
@@ -84,13 +68,8 @@ class _MyApp extends State<MyApp> {
     );
   }
 
-  Future<void> _init() async {
-    await widget._repo.init();
-  }
-
   @override
   void initState() {
-    _init();
     super.initState();
   }
 
@@ -99,7 +78,10 @@ class _MyApp extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<KanjiBloc>(
-          create: (_) => widget._kanjiBloc,
+          create: (_) => KanjiBloc(
+            widget._db,
+            widget._storage,
+          ),
         ),
       ],
       child: MaterialApp(

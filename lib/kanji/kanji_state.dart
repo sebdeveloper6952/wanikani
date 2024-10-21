@@ -12,6 +12,7 @@ enum KanjiStatus {
   showingDetails,
   done,
   error,
+  missingApiToken,
 }
 
 class KanjiState extends Equatable {

@@ -43,3 +43,11 @@ final class AnswerSubjectReadingEvent extends KanjiEvent {
 }
 
 final class ShowSubjectDetailsEvent extends KanjiEvent {}
+
+final class MissingApiTokenEvent extends KanjiEvent {}
+
+final class SetApiTokenEvent extends KanjiEvent {
+  final String token;
+
+  SetApiTokenEvent({required this.token});
+}
