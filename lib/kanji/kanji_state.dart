@@ -6,8 +6,8 @@ enum KanjiStatus {
   ready,
   waitingForMeaning,
   answerMeaningCorrect,
-  waitingForWriting,
-  answerWritingCorrect,
+  waitingForReading,
+  answerReadingCorrect,
   incorrectAnswer,
   showingDetails,
   done,
@@ -18,33 +18,33 @@ class KanjiState extends Equatable {
   final KanjiStatus status;
   final Subject? subject;
   final String meaningGuess;
-  final List<String> writingGuesses;
+  final List<String> readingGuesses;
 
   const KanjiState({
     required this.status,
     required this.subject,
     required this.meaningGuess,
-    required this.writingGuesses,
+    required this.readingGuesses,
   });
 
   static KanjiState initial() => const KanjiState(
         status: KanjiStatus.loading,
         subject: null,
         meaningGuess: "",
-        writingGuesses: [],
+        readingGuesses: [],
       );
 
   KanjiState copyWith({
     KanjiStatus? status,
     Subject? subject,
     String? meaningGuess,
-    List<String>? writingGuesses,
+    List<String>? readingGuesses,
   }) =>
       KanjiState(
         status: status ?? this.status,
         subject: subject ?? this.subject,
         meaningGuess: meaningGuess ?? this.meaningGuess,
-        writingGuesses: writingGuesses ?? this.writingGuesses,
+        readingGuesses: readingGuesses ?? this.readingGuesses,
       );
 
   @override

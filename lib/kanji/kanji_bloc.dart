@@ -17,6 +17,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
     on<GetRandomSubjectEvent>(_onGetRandomSubject);
     on<UpdateSubjectMeaningEvent>(_onUpdateSubjectMeaning);
     on<AnswerSubjectMeaningEvent>(_onAnswerSubjectMeaning);
+    on<AnswerSubjectReadingEvent>(_onAnswerSubjectReading);
 
     _init();
   }
@@ -37,10 +38,31 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
 
     final subject = await repo.getRandomSubject();
 
+    final readings = <String>[];
+    if (subject!.object.toLowerCase() != "radical") {
+      final randomSubjects = await repo.getRandomSubjectsWithType(
+        3,
+        subject.object,
+      );
+      final subjects = <Subject>[subject, ...randomSubjects];
+      for (var subject in subjects) {
+        if (subject.data.readings != null) {
+          for (var reading in subject.data.readings!) {
+            if (reading.acceptedAnswer ?? false) {
+              readings.add(reading.reading);
+              break;
+            }
+          }
+        }
+      }
+    }
+    readings.shuffle();
+
     emit(
       state.copyWith(
-        status: KanjiStatus.waitingForWriting,
+        status: KanjiStatus.waitingForMeaning,
         subject: subject,
+        readingGuesses: readings,
       ),
     );
   }
@@ -96,7 +118,7 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
           () {
             emit(
               state.copyWith(
-                status: KanjiStatus.waitingForWriting,
+                status: KanjiStatus.waitingForReading,
               ),
             );
           },
@@ -117,6 +139,68 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
       () => emit(
         state.copyWith(
           status: KanjiStatus.waitingForMeaning,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onAnswerSubjectReading(
+    AnswerSubjectReadingEvent event,
+    Emitter<KanjiState> emit,
+  ) async {
+    if (state.subject == null) {
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        status: KanjiStatus.loading,
+      ),
+    );
+
+    final subject = await repo.getSubjectById(
+      state.subject!.id,
+    );
+
+    if (subject == null) {
+      emit(
+        state.copyWith(
+          status: KanjiStatus.error,
+        ),
+      );
+      return;
+    }
+
+    for (var reading in subject.data.readings!) {
+      if (event.reading == reading.reading) {
+        emit(
+          state.copyWith(
+            status: KanjiStatus.answerMeaningCorrect,
+          ),
+        );
+
+        await Future.delayed(
+          const Duration(seconds: 1),
+          () {
+            add(GetRandomSubjectEvent());
+          },
+        );
+
+        return;
+      }
+    }
+
+    emit(
+      state.copyWith(
+        status: KanjiStatus.incorrectAnswer,
+      ),
+    );
+
+    await Future.delayed(
+      const Duration(seconds: 1),
+      () => emit(
+        state.copyWith(
+          status: KanjiStatus.waitingForReading,
         ),
       ),
     );

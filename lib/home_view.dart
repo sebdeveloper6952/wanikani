@@ -218,7 +218,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _frontCardWritingWidget(KanjiState state) {
+  Widget _frontCardReadingWidget(KanjiState state) {
     if (state.subject == null) {
       return Container();
     }
@@ -235,67 +235,27 @@ class _HomeViewState extends State<HomeView> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              ElevatedButton(
-                onPressed: () {},
-                child: Text(
-                  "option 1",
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(
-                    24,
+              ...state.readingGuesses.map(
+                (reading) => ElevatedButton(
+                  onPressed: () {
+                    context.read<KanjiBloc>().add(
+                          AnswerSubjectReadingEvent(
+                            reading: reading,
+                          ),
+                        );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(
+                      24,
+                    ),
+                    shadowColor: Colors.transparent,
+                    backgroundColor: Colors.white70,
+                    foregroundColor: Utils.getColorForSubjectType(
+                      state.subject!.object,
+                    ),
                   ),
-                  shadowColor: Colors.transparent,
-                  backgroundColor: Colors.white70,
-                  foregroundColor: Utils.getColorForSubjectType(
-                    state.subject!.object,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text(
-                  "option 1",
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(
-                    24,
-                  ),
-                  shadowColor: Colors.transparent,
-                  backgroundColor: Colors.white70,
-                  foregroundColor: Utils.getColorForSubjectType(
-                    state.subject!.object,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text(
-                  "option 1",
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(
-                    24,
-                  ),
-                  shadowColor: Colors.transparent,
-                  backgroundColor: Colors.white70,
-                  foregroundColor: Utils.getColorForSubjectType(
-                    state.subject!.object,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text(
-                  "option 1",
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(
-                    24,
-                  ),
-                  shadowColor: Colors.transparent,
-                  backgroundColor: Colors.white70,
-                  foregroundColor: Utils.getColorForSubjectType(
-                    state.subject!.object,
+                  child: Text(
+                    reading,
                   ),
                 ),
               ),
@@ -635,7 +595,7 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
               );
-            } else if (state.status == KanjiStatus.waitingForWriting) {
+            } else if (state.status == KanjiStatus.waitingForReading) {
               return Center(
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height,
@@ -646,7 +606,7 @@ class _HomeViewState extends State<HomeView> {
                     animationDuration: const Duration(
                       milliseconds: 300,
                     ),
-                    frontWidget: _frontCardWritingWidget(state),
+                    frontWidget: _frontCardReadingWidget(state),
                     backWidget: _backWidget(state),
                   ),
                 ),

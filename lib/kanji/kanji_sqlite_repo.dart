@@ -82,4 +82,18 @@ class KanjiSqliteRepo {
 
     return _subjects[randomIndex];
   }
+
+  Future<List<Subject>> getRandomSubjectsWithType(
+    int numberOfSubjects,
+    String type,
+  ) async {
+    final subjects = await db.query(
+      _subjectsTable,
+      where: "object = ?",
+      whereArgs: [type],
+      limit: numberOfSubjects,
+    );
+
+    return subjects.map(Subject.fromDbMap).toList();
+  }
 }

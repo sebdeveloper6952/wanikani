@@ -26,21 +26,19 @@ final class AnswerSubjectMeaningResultEvent extends KanjiEvent {
   });
 }
 
-final class AnswerSubjectWritingResultEvent extends KanjiEvent {
+final class AnswerSubjectReadingResultEvent extends KanjiEvent {
   final bool correct;
 
-  AnswerSubjectWritingResultEvent({
+  AnswerSubjectReadingResultEvent({
     required this.correct,
   });
 }
 
-final class AnswerSubjectWritingEvent extends KanjiEvent {
-  final int subjectId;
-  final String writing;
+final class AnswerSubjectReadingEvent extends KanjiEvent {
+  final String reading;
 
-  AnswerSubjectWritingEvent({
-    required this.subjectId,
-    required this.writing,
+  AnswerSubjectReadingEvent({
+    required this.reading,
   });
 }
 

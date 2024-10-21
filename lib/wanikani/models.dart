@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:json_annotation/json_annotation.dart';
 
@@ -60,10 +61,12 @@ class Meaning {
 class Reading {
   final String reading;
   final String? type;
+  final bool? acceptedAnswer;
 
   Reading({
     required this.reading,
     required this.type,
+    required this.acceptedAnswer,
   });
 
   factory Reading.fromJson(Map<String, dynamic> json) =>

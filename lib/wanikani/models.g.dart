@@ -82,14 +82,17 @@ Reading _$ReadingFromJson(Map<String, dynamic> json) => $checkedCreate(
         final val = Reading(
           reading: $checkedConvert('reading', (v) => v as String),
           type: $checkedConvert('type', (v) => v as String?),
+          acceptedAnswer: $checkedConvert('accepted_answer', (v) => v as bool?),
         );
         return val;
       },
+      fieldKeyMap: const {'acceptedAnswer': 'accepted_answer'},
     );
 
 Map<String, dynamic> _$ReadingToJson(Reading instance) => <String, dynamic>{
       'reading': instance.reading,
       'type': instance.type,
+      'accepted_answer': instance.acceptedAnswer,
     };
 
 CharacterImage _$CharacterImageFromJson(Map<String, dynamic> json) =>
