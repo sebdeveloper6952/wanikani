@@ -136,6 +136,9 @@ class KanjiBloc extends Bloc<KanjiEvent, KanjiState> {
         await Future.delayed(
           const Duration(seconds: 1),
           () {
+            if (state.subject!.object.toLowerCase() == "radical") {
+              add(GetRandomSubjectEvent());
+            }
             emit(
               state.copyWith(
                 status: KanjiStatus.waitingForReading,
